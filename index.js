@@ -1,16 +1,19 @@
 /*
 
-  abstract json matching/verification library
+  matcher - abstract dictionary (json) matching/verification library
   
-  accepts a json object and verifies it.
+  accepts an object and verifies it.
   uses verifiers I stole from livevalidation (verify.js) + some aditions
+  
+  Copyright(c) 2012 Ivan Nikolic [lesh] <lesh@sysphere.org>
+  MIT Licensed
 
 */
 
 var Validate = require('./validate.js').Validate
 var _ = require('underscore')
 
-Validate.Boolean: function (value, paramsObj) { 
+Validate.Boolean = function (value, paramsObj) { 
     var paramsObj = paramsObj || {};
     var message = paramsObj.failureMessage || "Need a boolean!";
     if (value.constructor != Boolean) { 
@@ -19,7 +22,7 @@ Validate.Boolean: function (value, paramsObj) {
     return true;
 }
 
-Validate.String: function (value, paramsObj) { 
+Validate.String = function (value, paramsObj) { 
     var paramsObj = paramsObj || {};
     var message = paramsObj.failureMessage || "Need a boolean!";
     if (value.constructor != String) { 
@@ -28,29 +31,22 @@ Validate.String: function (value, paramsObj) {
     return true;
 }
 
-Validate.Number: function (value, paramsObj) { 
-    var paramsObj = paramsObj || {};
-    var message = paramsObj.failureMessage || "Need a boolean!";
-    if (value.constructor != Number) { 
-        Validate.fail(message)
-    }
-    return true;
-}
+Validate.Number = Validate.Numeralicity
 
 
-
+/*
 
 
 
 verify({
     selector: { validators : [ 
         exports.verify.boolType, {} 
-    ]}
+    ]},
     
     bla: { def: 'bla', type:}
     
 })
-
+*/
 
 
 function leafmatch(msg,pattern) {  
