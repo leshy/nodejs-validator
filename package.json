@@ -1,0 +1,20 @@
+{
+  "name": "matcher",
+  "version": "0.1",
+  "description": "dictionary matching/validation",
+  "keywords": [
+    "json",
+    "match"
+  ],
+  "author": {
+    "name": "Ivan Nikolic [lesh]",
+    "email": "lesh@sysphere.org"
+  },
+  "dependencies": {
+    "underscore": "1.3.x"
+  },
+  "main": "index",
+  "engines": {
+    "node": "node >= 0.4.x"
+  }
+}
