@@ -7,14 +7,14 @@
   MIT Licensed
 */
 
-var Validate = require('./validate.js').Validate
+var Verify = require('./validate.js').Validate
 var _ = require('underscore')
 
 // deretardates the magical arguments object
 function toArray(arg) { return Array.prototype.slice.call(arg); }
 
 
-Validate.Constructor = function (value, paramsObj) { 
+Verify.Constructor = function (value, paramsObj) { 
     var paramsObj = paramsObj || {};
     var message = paramsObj.failureMessage || "Need a correct type!"
     var type = paramsObj.type
@@ -28,13 +28,15 @@ Validate.Constructor = function (value, paramsObj) {
 
 // creates Validate.Boolean, Validate.String, etc validators...
 _.map([ Boolean, String, Function, Object, Array, Number ],function (type) { 
-    Validate[type.name] = function (value,paramsObj) { 
+    Verify[type.name] = function (value,paramsObj) { 
         var paramsObj = paramsObj || {};
         paramsObj.type = Boolean
-        Validate.Constructor(value, paramsObj)
+        Verify.Constructor(value, paramsObj)
     }
 })
 
+
+Verify.Url = "implement this plz"
 
 
 function leafmatch(msg,pattern) {  
@@ -96,12 +98,11 @@ function match(msg,pattern) {
 
 
 
-exports.verify = function (options,required) { 
-    
-    
-    
-    
+exports.validate = function (data,pattern) { 
+    return data
 }
+
+exports.verify = Verify
 
 
 
