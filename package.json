@@ -1,6 +1,6 @@
 {
   "name": "matcher",
-  "version": "0.1",
+  "version": "0.0.1",
   "description": "dictionary matching/validation",
   "keywords": [
     "json",
