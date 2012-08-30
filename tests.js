@@ -4,12 +4,6 @@
 */
 
 var Validator = require('./index.js').Validator
-var colors = require('colors')
-exports.Testing = function(test){
-    test.expect(1);
-    test.ok(true, "this assertion should pass");
-    test.done();
-};
 
 
 exports.BasicValidatorChaining = function(test) {
