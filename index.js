@@ -30,7 +30,7 @@ Validate.Constructor = function (value, paramsObj) {
 // creates type validators (Validate.Boolean, Validate.String, etc)
 _.map([ Boolean, String, Function, Object, Array, Number ],function (type) { 
     Validate[type.name] = function (value) { 
-        Validate.Constructor(value, {type : type})
+        return Validate.Constructor(value, {type : type})
     }
 })
 
@@ -55,64 +55,132 @@ Validator().Default({ meta: {} }).Validate({
 
 
 
+/*
+  Validatorobject is an object that validates a peace of JSON.
+  they can be chained:
+
+  var validator = Validator().Default('bla').String().Length(3)
+
+  validate()  will create an empty validator object,
+  default will create its child, that sets default value if there is none 
+  string will create another child... etc
+
+  in order to validate a peace of JSON you do a 
+
+  validator.feed(something,callback) 
+
+  callback expects err, and data objects
+
+*/
 
 function ValidatorObject (options) { 
     this.child = undefined
     this.operation = undefined
-    this.options = options
+    this.options = options || {}
 }
 
-ValidatorObject.prototype.feed = function (value,callback) {
-    if (!this.operation && !this.child) { throw "noop" }
 
-    if (this.operation) {
-        this.operation(value,options,function (err,data) {
-            if (!this.child) { callback(err,data); return; }
-        })
-    }
+ValidatorObject.prototype.feed = function (value,callback,origin) {
+    if (!this.operation && !this.child) { throw this.name + " noop" }
     
-    if (this.child) { this.child.feed(value,callback) }
-}
+    var self = this
+   
+    if (this.operation) {
+        this.operation(value,this.options,function (err,data) {
 
-_.map(Validate,function (validatorf,name) {
-    ValidatorObject.prototype[name] = function (value,options,callback) {
-        var self = this
-        this.child = new ValidatorObject()
-        this.child.operation = helpers.returnOrCallbackPack(function (callback) { return validatorf(value,options,callback) })
+            if (err) { callback(err,data); return }
+            
+            if (!self.child) { 
+                callback(err,data); 
+            } else {
+                if (self.changesValue) { value = data }
+                self.child.feed(value,callback)
+            }
+        })
+    } else {
+        if (this.child) { this.child.feed(value,callback) }
     }
-})
 
-
-function ValidatorDefault (value) {
-    this.value = value
 }
 
-ValidatorDefault.prototype = _.extend(ValidatorDefault.prototype,ValidatorObject.prototype) // inherit 
-
-ValidatorDefault.prototype.feed = function (value,callback) { // specialize
-    if (!value) { value = this.value }
-    ValidatorObject.prototype.feed.call(this,value,callback)
+ValidatorObject.prototype.last = function () {
+    if (!this.child) { return this } else { return this.child.last() }
 }
 
-// need to extend validatorobject with default() call..
+ValidatorObject.prototype.first = function (value) {
+    if (value) { this.firstObject = value } else { 
+        return this.firstObject || this
+    }
+}
 
+ValidatorObject.prototype.opt = function () {
+    return this.first().globalOptions
+}
 
-
-
-
-
-function Validator() {
-    return new ValidatorObject() 
+ValidatorObject.prototype.Debug = function () {
+    this.opt().debug = true
+    return this
 }
 
 
+function addObjectToValidators (obj,name) {
+    ValidatorObject.prototype[name] = function (options) {
+        this.child = new obj(options)
+        this.child.name = name
+        return this.child
+    }
+}
+// this is kinda crappy, I should pby use my graph lib..
+function addFunctionToValidators (validatorf,name,changesValue) {
+    ValidatorObject.prototype[name] = function (options) {
+        
+        var last = this.last()
+        var opt = this.opt()
+        
+        last.child = new ValidatorObject()
+        last.child.name = name
+        last.child.options = options
+        last.child.changesValue = changesValue
+        last.child.first(this.first())
+        last.child.operation = function (value,options,callback) {  
+            if (opt.debug) { console.log('>>'.green +  ' calling',name,'with',value) }
+            helpers.forceCallback(function (callback) { 
+                return validatorf(value,options,callback)
+            }, function (err,data) { 
+                if (opt.debug) { console.log('<<'.cyan +  ' got',err,data) }
+                
+                if (changesValue) { 
+                    callback(err,data)
+                } else {
+                    callback(err,value) 
+                }
+
+            })
+        }
+
+        return this
+    }
+}
 
 
+_.map(Validate,function (validatorf,name) { addFunctionToValidators(validatorf,name) })
 
+addFunctionToValidators(function (value,options,callback) {
+    if (!value) { value = options }
+    callback(undefined,value)
+},"Default",true)
+
+
+var Validator = exports.Validator = function (options) { 
+    var validator = new ValidatorObject() 
+    validator.globalOptions = options || {}
+    return validator
+}
 
 
 
 /*
+
 
 var target = Validate(
     testdata,
