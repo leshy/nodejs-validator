@@ -36,6 +36,7 @@ _.map([ Boolean, String, Function, Object, Array, Number ],function (type) {
 
 Validate.Url = "implement this plz" // this is a specialization of validate.format
 
+
 /*
   Validatorobject is an object that validates a peace of JSON.
   they can be chained:
@@ -150,8 +151,17 @@ function addFunctionToValidators (validatorf,name,changesValue) {
 _.map(Validate,function (validatorf,name) { addFunctionToValidators(validatorf,name) })
 
 addFunctionToValidators(function (value,options,callback) {
-    if (!value) { value = options }
-    callback(undefined,value)
+    if (!value) { 
+        if (options.constructor == Function) {
+            helpers.forceCallback(options,callback)
+        } else {
+            value = options 
+            callback(undefined,value)
+        }
+    } else {
+        callback(undefined,value)
+    }
+    
 },"Default",true)
 
 addFunctionToValidators(function (value,options,callback) {
