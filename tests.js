@@ -13,7 +13,20 @@ exports.Testing = function(test){
 
 
 exports.BasicValidatorChaining = function(test) {
-    var validator = Validator().Default("bla").String().Length({minimum: 3, maximum: 30})
+    var validator = Validator().Debug().Default("bla").String().Length({minimum: 3, maximum: 30})
+    validator.feed(undefined,function (err,data) {
+        console.log("validation done:".cyan,err,data)
+        test.done();
+    })
+};
+
+
+exports.ValidatorForking = function(test) {
+    var validator = Validator().Debug().Default({bla: 3}).Children({
+        bla: Validator().Debug().Number(),
+        xx: Validator().Debug().Default("test").String()
+    })
+    
     validator.feed(undefined,function (err,data) {
         console.log("validation done:".cyan,err,data)
         test.done();
