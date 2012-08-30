@@ -16,5 +16,10 @@
   "main": "index",
   "engines": {
     "node": "node >= 0.4.x"
-  }
+  },
+  "_id": "validator@0.0.1",
+  "dist": {
+    "shasum": "ba0ea9faf1b253ca661a684194de5a6d4e991c2a"
+  },
+  "_from": "validator@git://github.com/leshy/nodejs-validator.git"
 }

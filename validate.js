@@ -163,17 +163,17 @@ var Validate = {
     	var tooLongMessage = paramsObj.tooLongMessage || "Must not be more than " + maximum + " characters long!";
     	switch(true){
     	  	case (is !== null):
-    	  		if( value.length != Number(is) ) Validate.fail(wrongLengthMessage);
+    	  		if( value.length != Number(is) ) Validate.fail(wrongLengthMessage,value);
     			break;
     	  	case (minimum !== null && maximum !== null):
     	  		Validate.Length(value, {tooShortMessage: tooShortMessage, minimum: minimum});
     	  		Validate.Length(value, {tooLongMessage: tooLongMessage, maximum: maximum});
     	  		break;
     	  	case (minimum !== null):
-    	  		if( value.length < Number(minimum) ) Validate.fail(tooShortMessage);
+    	  		if( value.length < Number(minimum) ) Validate.fail(tooShortMessage,value);
     			break;
     	  	case (maximum !== null):
-    	  		if( value.length > Number(maximum) ) Validate.fail(tooLongMessage);
+    	  		if( value.length > Number(maximum) ) Validate.fail(tooLongMessage,value);
     			break;
     		default:
     			throw new Error("Validate::Length - Length(s) to validate against must be provided!");
@@ -349,8 +349,10 @@ var Validate = {
      *
      *	@var errorMessage {String} - message to display
      */
-    fail: function(errorMessage){
-            throw new Validate.Error(errorMessage);
+    fail: function(errorMessage,value){
+        if (value) { errorMessage = errorMessage + " (got " + value.constructor.name + " \"" +  value  + "\")" }
+        console.log(errorMessage)
+        throw new Validate.Error(errorMessage);
     },
     
     Error: function(errorMessage){
