@@ -41,6 +41,22 @@ Validate.Exists = function (value) {
     return true
 }
 
+
+Validate.DoesntExist = function (value) {
+    if (value != undefined) { 
+        Validate.fail("didn't get undefined")
+    }
+    return true
+}
+
+
+Validate.Is = Validate.Equality = function (value,paramsObj) {
+    if (value != paramsObj) {
+        Validate.fail(value + " != " + paramsObj)
+    }
+    return true
+}
+
 Validate.Url = "implement this plz" // this is a specialization of validate.format
 
 
@@ -69,7 +85,7 @@ function ValidatorObject (options) {
 }
 
 
-ValidatorObject.prototype.feed = function (value,callback,origin) {
+ValidatorObject.prototype.match = ValidatorObject.prototype.feed = function (value,callback,origin) {
     if (!this.operation && !this.child) { throw this.name + " noop" }
     
     var self = this
@@ -89,7 +105,6 @@ ValidatorObject.prototype.feed = function (value,callback,origin) {
     } else {
         if (this.child) { this.child.feed(value,callback) }
     }
-
 }
 
 ValidatorObject.prototype.last = function () {
@@ -176,8 +191,7 @@ addFunctionToValidators(function (value,options,callback) {
     
     var functions = {}
     _.map(options,function (validator,property) {
-        // syntax sugar
-        if (validator.constructor != ValidatorObject) { validator = new Validator(validator) } 
+        validator = Validator(validator) // make sure we have validator and not some sintax sugar
         functions[property] = function (callback) { validator.feed(value[property],callback) }
     })
     
@@ -192,23 +206,75 @@ addFunctionToValidators(function (value,options,callback) {
 }, "Children", true)
 
 
+addFunctionToValidators(function (value,options,callback) {
+
+    var functions = _.map(options, function (validator) {
+        return function (callback) { Validator(validator).feed(value,callback) }
+    })
+    
+    function chew () {
+        if (!functions.length) { 
+            Validate.fail("none of the possible validators passed")
+        }
+
+        var f = functions.shift()
+        
+        f(function (err,data) {
+            if (err) {
+                chew()
+            } else {
+                callback(undefined,data)
+            }
+        })
+    }
+
+    chew()
+}, "Or", true)
+
+// I need an array validator! implement it! something like:
+/*
+
+[ "Number", Validator.Number(), "String", "...", Validator().Function() ]
+
+
+[ 3, 1, "bla", f() {} ] and [ 3, 1, "bla", 5, 2, "fff", f() {} ] 
+would pass for example
+
+maybe look at regexps, take some insipration from there..
+
+*/
+
+
+var is = exports.is = function (value) {
+    return Validator().Is({value: value})
+}
 
 var Validator = exports.Validator = function (options) { 
-    var validator = new ValidatorObject() 
     
-    validator.globalOptions = {}
+    if ((options != undefined) && (options.constructor == ValidatorObject)) { return options }
+
+    var validator = new ValidatorObject() 
+    validator.globalOptions = {} // debug boolean and such things, stored in the first validator
+
     if (!options) { return validator }
     
-    // syntax sugar
+    //                |
+    // syntax sugar   V
     
-    // insta-children validator!
+    // insta children validator
     if (options.constructor == Object) {
-        return validator.Children(object)
+        return validator.Children(options)
     }
     
-    // insta one specific no arguments validator
+    // insta one-specific-no-arguments-validator
     if (options.constructor == String) { 
-        return (validator[options])()
+        if (!validator[options]) { throw "validator named " + options + " not found" }
+        return validator[options]()
+    }
+
+    // insta one-specific-no-arguments-validator
+    if (options.constructor == Number) { 
+        return validator.Numericality({is: options})
     }
 
     // insta existance
@@ -222,24 +288,35 @@ function leafmatch(msg,pattern) {
 }
 
 //
-// expects Target, Pattern, Function, Pattern, Function, Pattern, Function
+// expects Data, Pattern, Function, Pattern, Function, Pattern, Function
 //
 // calls the function next to a pattern that got matched, and provides function (next) as its argument..
 // if next is called, matching continues and next function might be executed if its pattern matches, othervise the thing ends.
 //
+
 function select() { 
     var args = toArray(arguments)
     if ((args.length < 3) || !(args % 2)) { throw "wrong number of arguments" }
     
     var target = args.shift()
+    var MainCallback = args.shift()
 
-    while (args.length) {
+    var chew = function (args) {
+        // this should return a proper error object, and not a string
+        if (!args.length) { MainCallback("didn't find a match",undefined); return } 
+
         var pattern = args.shift()
         var callback = args.shift()
         
-        if (match(target,pattern)) {
-            callback(function () { select(target,args) })
-            return
-        }
+        pattern.match(target, function (err,data) {
+            if (!err) { 
+                callback(data,MainCallback)
+            } else {
+                chew(args)
+            }
+        })
     }
+
+    chew(args)        
 }
+

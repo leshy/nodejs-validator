@@ -351,7 +351,7 @@ var Validate = {
      */
     fail: function(errorMessage,value){
         if (value) { errorMessage = errorMessage + " (got " + value.constructor.name + " \"" +  value  + "\")" }
-        console.log(errorMessage)
+        //console.log(errorMessage)
         throw new Validate.Error(errorMessage);
     },
     
