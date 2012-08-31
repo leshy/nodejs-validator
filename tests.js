@@ -7,19 +7,32 @@ var Validator = require('./index.js').Validator
 
 
 exports.BasicChaining = function(test) {
-    var validator = Validator().Default("bla").String().Length({minimum: 3, maximum: 30})
-    validator.feed(undefined,function (err,data) {
-        test.equals(data,'bla')
-        test.done();
+
+    var validator = Validator()
+        .Default("bla")
+        .Not(Validator().Is('hello'))
+        .String()
+        .Length({minimum: 3, maximum: 30})
+
+    validator.feed('hello',function (err,data) { // we feed it 'hello', which is forbidden by Not validator
+        if (!err) { test.fail('validator accepted "hello"'); return }
+
+        validator.feed(undefined,function (err,data) { // we feed it undefined, it defaults to 'bla' and passes other checks
+            test.equals(data,'bla')
+            test.done();
+        })
+
     })
 };
 
 
 exports.Forking = function(test) {
-    var validator = Validator().Default({bla: 3}).Children({
-        bla: "Number" , // syntax sugar, check out children validator and Validator() function
-        xx: Validator().Default("test").String()
-    })
+    var validator = Validator()
+        .Default({bla: 3})
+        .Children({
+            xx: Validator().Default("test").String(),
+            bla: "Number" // syntax sugar, we don't need to give it validator instance here, we can just mention an argumentless validator
+        })
     
     validator.feed({bla : 3 },function (err,data) {
         test.equals(JSON.stringify(data),'{"bla":3,"xx":"test"}')
@@ -30,8 +43,7 @@ exports.Forking = function(test) {
 
 
 exports.Or = function (test) {
-
-    var validator = Validator({ 
+    var validator = Validator({ // note that here we didn't call Validator().Children({ ... }) but validator({ ... }) which is syntax sugar.
         bla: true,
         // this is a weird one:
         // property 'xx' can only be string or undefined. if its undefined it will be turned into 3
@@ -49,7 +61,7 @@ exports.Or = function (test) {
                 test.done()
             })
         } else {
-            test.fail()
+            test.fail('or validator accepted an invalid input')
         }
     })
 
