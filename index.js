@@ -206,6 +206,16 @@ addFunctionToValidators(function (value,options,callback) {
 }, "Children", true)
 
 
+
+addFunctionToValidators(function (value,options,callback) {
+    validator = Validator(options)
+    validator.feed(value,function (err,data) {
+        if (!err) { Validate.fail("validator matched and it shouldn't") }
+        callback(undefined,true)
+    })
+}, "Not")
+
+
 addFunctionToValidators(function (value,options,callback) {
 
     var functions = _.map(options, function (validator) {
@@ -230,6 +240,10 @@ addFunctionToValidators(function (value,options,callback) {
 
     chew()
 }, "Or", true)
+
+
+
+
 
 // I need an array validator! implement it! something like:
 /*
