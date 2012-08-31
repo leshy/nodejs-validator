@@ -50,7 +50,7 @@ exports.Or = function (test) {
         xx: Validator().Or(
             [
                 "String",
-                Validator().Not("Exists").Set(3)
+                Validator().Not("Exists").Set(3) // again, this could have been: Not(Validator().Exists()).Set(3)
             ])
     })
 
