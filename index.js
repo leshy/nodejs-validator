@@ -34,6 +34,13 @@ _.map([ Boolean, String, Function, Object, Array, Number ],function (type) {
     }
 })
 
+Validate.Exists = function (value) {
+    if (value === undefined) { 
+        Validate.fail("got undefined")
+    }
+    return true
+}
+
 Validate.Url = "implement this plz" // this is a specialization of validate.format
 
 
@@ -169,6 +176,8 @@ addFunctionToValidators(function (value,options,callback) {
     
     var functions = {}
     _.map(options,function (validator,property) {
+        // syntax sugar
+        if (validator.constructor != ValidatorObject) { validator = new Validator(validator) } 
         functions[property] = function (callback) { validator.feed(value[property],callback) }
     })
     
@@ -186,8 +195,26 @@ addFunctionToValidators(function (value,options,callback) {
 
 var Validator = exports.Validator = function (options) { 
     var validator = new ValidatorObject() 
-    validator.globalOptions = options || {}
-    return validator
+    
+    validator.globalOptions = {}
+    if (!options) { return validator }
+    
+    // syntax sugar
+    
+    // insta-children validator!
+    if (options.constructor == Object) {
+        return validator.Children(object)
+    }
+    
+    // insta one specific no arguments validator
+    if (options.constructor == String) { 
+        return (validator[options])()
+    }
+
+    // insta existance
+    if (options === true) {
+        return validator.Exists()
+    }
 }
 
 function leafmatch(msg,pattern) {

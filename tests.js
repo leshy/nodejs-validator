@@ -17,7 +17,7 @@ exports.BasicValidatorChaining = function(test) {
 
 exports.ValidatorForking = function(test) {
     var validator = Validator().Default({bla: 3}).Children({
-        bla: Validator().Number(),
+        bla: "Number", // syntax sugar, check out children validator and Validator() function
         xx: Validator().Default("test").String()
     })
     
