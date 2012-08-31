@@ -35,7 +35,11 @@ exports.Or = function (test) {
         bla: true,
         // this is a weird one:
         // property 'xx' can only be string or undefined. if its undefined it will be turned into 3
-        xx: Validator().Or(["String",Validator().Not("Exists").Default(3)])
+        xx: Validator().Or(
+            [
+                "String",
+                Validator().Not("Exists").Set(3)
+            ])
     })
 
     validator.feed({bla: 3, xx: true},function (err,data) { // this shouldn't pass

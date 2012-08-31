@@ -206,7 +206,6 @@ addFunctionToValidators(function (value,options,callback) {
 }, "Children", true)
 
 
-
 addFunctionToValidators(function (value,options,callback) {
     validator = Validator(options)
     validator.feed(value,function (err,data) {
@@ -214,6 +213,11 @@ addFunctionToValidators(function (value,options,callback) {
         callback(undefined,true)
     })
 }, "Not")
+
+
+addFunctionToValidators(function (value,options,callback) {
+    callback(undefined,options)
+}, "Set", true)
 
 
 addFunctionToValidators(function (value,options,callback) {
