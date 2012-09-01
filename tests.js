@@ -50,7 +50,7 @@ exports.Forking = function(test) {
   ABOUT SYNTAX HELPERS
 
   whenever a validator expects another validator object, if we give it something else, 
-  it will try to figure out which validator to instantiate.
+  it will try to figure out which validator to instantiate from what it received.
   (check out exports.Validator function in the code)
 
   validators that expect other validators as arguments are for example Not, Or, Children and such..
