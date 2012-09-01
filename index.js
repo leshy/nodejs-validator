@@ -51,7 +51,7 @@ Validate.Url = "implement this plz" // this is a specialization of validate.form
 
 
 /*
-  Validatorobject is an object that validates a peace of JSON.
+  Validatorobject is an object that validates a piece of JSON.
   they can be chained:
 
   var validator = Validator().Default('bla').String().Length(3)
@@ -64,7 +64,7 @@ Validate.Url = "implement this plz" // this is a specialization of validate.form
 
   validator.feed(something,callback) 
 
-  callback expects err, and data objects
+  callback expects err, and data objects, data will contain the original data, possibly altered by validators like .Set or .Default
 
 */
 
