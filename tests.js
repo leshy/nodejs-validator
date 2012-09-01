@@ -62,7 +62,7 @@ exports.Forking = function(test) {
   - some object will evaluate to Validator().Children(that_object)
 
   - some string will evaluate to Validator().SOME_STRING, so we can for example do a Validator("String") instead of Validator().String(), 
-    or more useful, in a Children (object) validator arguments: { bla: "String", kk: "Function" }
+    or more useful, in a Children (object) validator arguments: { bla: "String", kk: "Function" } or Not argument: Validator().Not("Number")
 
 */
 
