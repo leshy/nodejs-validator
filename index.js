@@ -312,25 +312,22 @@ function leafmatch(msg,pattern) {
 // if next is called, matching continues and next function might be executed if its pattern matches, othervise the thing ends.
 //
 
-function select() { 
+var Select = exports.Select = function () { 
     var args = toArray(arguments)
-    if ((args.length < 3) || !(args % 2)) { throw "wrong number of arguments" }
-    
+    if ((args.length < 3) || !(args.length % 2)) { throw "wrong number of arguments" }
+
     var target = args.shift()
-    var MainCallback = args.shift()
-
-    var chew = function (args) {
-        // this should return a proper error object, and not a string
-        if (!args.length) { MainCallback("didn't find a match",undefined); return } 
-
-        var pattern = args.shift()
+    
+    var chew = function () {
+        if (!args.length) { return }
+        var pattern = Validator(args.shift())
         var callback = args.shift()
-        
+
         pattern.match(target, function (err,data) {
             if (!err) { 
-                callback(data,MainCallback)
+                callback(data,chew)
             } else {
-                chew(args)
+                chew()
             }
         })
     }
@@ -338,3 +335,30 @@ function select() {
     chew(args)        
 }
 
+/*
+function select(options) {
+    Validator({
+        data: "Object",
+        match: "Array"
+//        match: [ "Object","Function", "..." ]
+    }).feed(options,function (err,options) {
+        if (err) { throw err }
+        var match = options.match
+
+        var chew = function () {
+            if (!match.length) { return }
+            pattern = match.shift()
+            callback = match.shift()
+
+            pattern.match(options.data,function (err,data) {
+                if (err) { chew(); return }
+                return callback(data,chew)
+            })
+        }
+
+        chew()
+        
+    })
+}
+
+*/

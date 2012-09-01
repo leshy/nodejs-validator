@@ -3,8 +3,9 @@
   https://github.com/caolan/nodeunit/
 */
 
-var Validator = require('./index.js').Validator
-
+var v = require('./index.js')
+var Validator = v.Validator
+var Select = v.Select
 
 exports.BasicChaining = function(test) {
 
@@ -68,7 +69,12 @@ exports.Or = function (test) {
 }
 
 exports.Select = function (test) {
-    test.done()
+    var objecttriggered = false
+    Select({bla:3}, 
+           "Number",function (data,next) { test.fail('object matched as number!') },
+           "Object",function (data,next) { objecttriggered = true; next()},
+           {bla: true},function (data,next) { test.equals(objecttriggered,true); next(); test.done()})
+           
 }
 
 
