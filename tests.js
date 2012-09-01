@@ -1,6 +1,8 @@
 /*
   nodeunit tests
   https://github.com/caolan/nodeunit/
+
+  this should serve as a shitty documentation too
 */
 
 var v = require('./index.js')
@@ -27,6 +29,7 @@ exports.BasicChaining = function(test) {
 };
 
 
+// Children validator test, used in order to validate object properties
 exports.Forking = function(test) {
     var validator = Validator()
         .Default({bla: 3})
@@ -40,6 +43,29 @@ exports.Forking = function(test) {
         test.done();
     })
 };
+
+
+/*
+
+  ABOUT SYNTAX HELPERS
+
+  whenever a validator expects another validator object, if we give it something else, 
+  and smart Validator() function will try to figure out which validator to instantiate..
+  check out exports.Validator function in the code..
+
+  validators that expect other validators as arguments are Not, Or, Children and such
+  
+  examples:
+
+  - true will be Validator().Exists()
+
+  - some object will evaluate to Validator().Children(that_object)
+
+  - some string will evaluate to Validator().SOME_STRING, so we can for example do a Validator("String") instead of Validator().String(), 
+    or more useful, in a Children (object) validator arguments: { bla: "String", kk: "Function" }
+
+*/
+
 
 
 exports.Or = function (test) {
@@ -79,7 +105,7 @@ exports.LazyInstantiation = function (test) {
     var validator = Validator(testargs)
     
     validator.match({bla:1},function (err,data) {
-        test.equals(testargs.bla.constructor, Validator().constructor) // make sure validator replaced its own arguments and has instantiated true to Validator().Exists()
+        test.equals(testargs.bla.constructor, Validator().constructor) // make sure validator has instantiated true to Validator().Exists() and replaced its own arguments for the future execution
         test.done()
     })
 }
