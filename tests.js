@@ -35,7 +35,7 @@ exports.QuickExample = function (test) {
     }, function (err,data) {
         if ((!err) && (data.timestamp)) { test.done() } else { test.fail() }
     })
-    
+
 }
 
 
@@ -89,11 +89,15 @@ exports.BasicChaining = function(test) {
 
     example: Validator().Not(Validator().Exists())
 
-  * Set - changes a value, can take a function, 
-    it will execute it to get the value, can take an async function also
+  * Set/Default - sets a value (default sets it only if the original is undefined)
+    can take a function, it will execute it to get the value, can take an async function also
     (expects a return to be undefined in that case)
 
     example: Validator().Not("Exists").Set(function() { new Date().GetTime() })
+
+                           is the same as:
+
+             Validator().Default(function() { new Date().GetTime() })
 
   * Children - inspects object properties
     

@@ -213,6 +213,8 @@ addFunctionToValidators(function (value,options,callback) {
 }, "Set", true)
 
 
+// or validator should use Select function its the same thing...
+// select function needs some kind of master callback that tells us if anything got matched though.
 addFunctionToValidators(function (value,options,callback) {
 
     var functions = _.map(options, function (validator) {
