@@ -71,14 +71,13 @@ exports.Select = function (test) {
     Select({bla:3}, 
            "Number",function (data,next) { test.fail('object matched as number!') },
            "Object",function (data,next) { objecttriggered = true; next()},
-           {bla: true},function (data,next) { test.equals(objecttriggered,true); next(); test.done()})
-           
+           {bla: true},function (data,next) { test.equals(objecttriggered,true); next(); test.done()})    
 }
 
 exports.LazyInstantiation = function (test) {
     var testargs = { bla : true }
     var validator = Validator(testargs)
-
+    
     validator.match({bla:1},function (err,data) {
         test.equals(testargs.bla.constructor, Validator().constructor) // make sure validator replaced its own arguments and has instantiated true to Validator().Exists()
         test.done()
