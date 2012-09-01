@@ -50,10 +50,10 @@ exports.Forking = function(test) {
   ABOUT SYNTAX HELPERS
 
   whenever a validator expects another validator object, if we give it something else, 
-  and smart Validator() function will try to figure out which validator to instantiate..
-  check out exports.Validator function in the code..
+  it will try to figure out which validator to instantiate.
+  (check out exports.Validator function in the code)
 
-  validators that expect other validators as arguments are Not, Or, Children and such
+  validators that expect other validators as arguments are for example Not, Or, Children and such..
   
   examples:
 
