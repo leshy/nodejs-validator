@@ -4,6 +4,37 @@
 
   this should serve as a shitty documentation too
 
+*/
+
+
+var v = require('./index.js')
+var Validator = v.Validator
+var Select = v.Select
+
+
+// introduction
+
+exports.BasicChaining = function(test) {
+
+    var validator = Validator()
+        .Default("bla")
+        .Not(Validator().Is('hello'))
+        .String()
+        .Length({minimum: 3, maximum: 30})
+
+    validator.feed('hello',function (err,data) { // we feed it 'hello', which is forbidden by Not validator
+        if (!err) { test.fail('validator accepted "hello"'); return }
+
+        validator.feed(undefined,function (err,data) { // we feed it undefined, it defaults to 'bla' and passes other checks
+            test.equals(data,'bla')
+            test.done();
+        })
+
+    })
+};
+
+
+/*
 
   AVAILIABLE VALIDATORS:
 
@@ -42,31 +73,8 @@
     
     example: Validator().Children({ bla: Validator().Exists(), bla2: "Number", bla3: Validator().Number()})
 
-
 */
 
-var v = require('./index.js')
-var Validator = v.Validator
-var Select = v.Select
-
-exports.BasicChaining = function(test) {
-
-    var validator = Validator()
-        .Default("bla")
-        .Not(Validator().Is('hello'))
-        .String()
-        .Length({minimum: 3, maximum: 30})
-
-    validator.feed('hello',function (err,data) { // we feed it 'hello', which is forbidden by Not validator
-        if (!err) { test.fail('validator accepted "hello"'); return }
-
-        validator.feed(undefined,function (err,data) { // we feed it undefined, it defaults to 'bla' and passes other checks
-            test.equals(data,'bla')
-            test.done();
-        })
-
-    })
-};
 
 
 // Children validator test, used in order to validate object properties

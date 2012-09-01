@@ -18,9 +18,8 @@ var async = require('async')
 function toArray(arg) { return Array.prototype.slice.call(arg); }
 
 Validate.Constructor = function (value, type) { 
-    var message = paramsObj.failureMessage || "Need a correct type (" + type.name + ")"
     if (value.constructor != type) { 
-        Validate.fail(message)
+        Validate.fail( "Need a correct type (" + type.name + ")")
     }
     return true;
 }
