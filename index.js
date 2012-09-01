@@ -34,17 +34,10 @@ _.map([ Boolean, String, Function, Object, Array, Number ],function (type) {
     }
 })
 
+
 Validate.Exists = function (value) {
     if (value === undefined) { 
         Validate.fail("got undefined")
-    }
-    return true
-}
-
-
-Validate.DoesntExist = function (value) {
-    if (value != undefined) { 
-        Validate.fail("didn't get undefined")
     }
     return true
 }
@@ -191,7 +184,10 @@ addFunctionToValidators(function (value,options,callback) {
     
     var functions = {}
     _.map(options,function (validator,property) {
-        validator = Validator(validator) // make sure we have validator and not some sintax sugar
+        // make sure we have validator and not some sintax sugar
+        // also, set it back to your own arguments dict, 
+        // this will make sure that validator instantiation is run only once.
+        validator = options[property] = Validator(validator) 
         functions[property] = function (callback) { validator.feed(value[property],callback) }
     })
     

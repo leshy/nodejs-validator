@@ -42,7 +42,6 @@ exports.Forking = function(test) {
 };
 
 
-
 exports.Or = function (test) {
     var validator = Validator({ // note that here we didn't call Validator().Children({ ... }) but validator({ ... }) which is syntax sugar.
         bla: true,
@@ -65,7 +64,6 @@ exports.Or = function (test) {
             test.fail('or validator accepted an invalid input')
         }
     })
-
 }
 
 exports.Select = function (test) {
@@ -77,4 +75,13 @@ exports.Select = function (test) {
            
 }
 
+exports.LazyInstantiation = function (test) {
+    var testargs = { bla : true }
+    var validator = Validator(testargs)
+
+    validator.match({bla:1},function (err,data) {
+        test.equals(testargs.bla.constructor, Validator().constructor) // make sure validator replaced its own arguments and has instantiated true to Validator().Exists()
+        test.done()
+    })
+}
 
