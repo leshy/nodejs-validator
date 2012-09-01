@@ -17,9 +17,7 @@ var async = require('async')
 // deretardates the magical arguments object
 function toArray(arg) { return Array.prototype.slice.call(arg); }
 
-Validate.Constructor = function (value, paramsObj) { 
-    var paramsObj = paramsObj || {};
-    var type = paramsObj.type
+Validate.Constructor = function (value, type) { 
     var message = paramsObj.failureMessage || "Need a correct type (" + type.name + ")"
     if (value.constructor != type) { 
         Validate.fail(message)
@@ -30,7 +28,7 @@ Validate.Constructor = function (value, paramsObj) {
 // creates type validators (Validate.Boolean, Validate.String, etc)
 _.map([ Boolean, String, Function, Object, Array, Number ],function (type) { 
     Validate[type.name] = function (value) { 
-        return Validate.Constructor(value, {type : type})
+        return Validate.Constructor(value, type)
     }
 })
 

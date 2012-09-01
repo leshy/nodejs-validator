@@ -3,6 +3,46 @@
   https://github.com/caolan/nodeunit/
 
   this should serve as a shitty documentation too
+
+
+  AVAILIABLE VALIDATORS:
+
+  * check validate.js, everything from livevalidation library
+    http://livevalidation.com/examples
+    
+    example: Validator().Length({minimum: 3, maximum: 30})
+
+  * Constructor (some type) - checks if data has a proper constructor
+    
+    example: Validator().Constructor(my_class)
+  
+  * String,Array,Function,Boolean (constructor validator specializations for build in types)
+    
+    example: Validator().String() or Validator("String")
+
+  * Exists - checks if data is !undefined
+    
+    example: Validator().Exists() or Validator("Exists")
+
+  * Is - checks if something is === to some value
+
+    example: Validator().Is("bla")
+
+  * Not - negates some other validator
+
+    example: Validator().Not(Validator().Exists())
+
+  * Set - changes a value, can take a function, 
+    it will execute it to get the value, can take an async function also
+    (expects a return to be undefined in that case)
+
+    example: Validator().Not("Exists").Set(function() { new Date().GetTime() })
+
+  * Children - inspects object properties
+    
+    example: Validator().Children({ bla: Validator().Exists(), bla2: "Number", bla3: Validator().Number()})
+
+
 */
 
 var v = require('./index.js')
@@ -30,7 +70,7 @@ exports.BasicChaining = function(test) {
 
 
 // Children validator test, used in order to validate object properties
-exports.Forking = function(test) {
+exports.Children = function(test) {
     var validator = Validator()
         .Default({bla: 3})
         .Children({
