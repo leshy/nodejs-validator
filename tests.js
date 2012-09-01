@@ -14,6 +14,32 @@ var Select = v.Select
 
 // introduction
 
+exports.QuickExample = function (test) {
+
+    Validator({
+        name: "String",
+        full_name: Validator().Default("John Doe").String().Length({maximum: 20, minimum: 3}),
+        timestamp: Validator().Default(function() { return new Date().getTime() }).Number(),
+        
+        something: Validator().Or([ "String", Validator().Number().Numericality({minimum: 88})]),
+
+        nested: { 
+            mom: "Number",
+            spiders: Validator().Not("Exists"),
+            bla: Validator().Set(3)
+        }
+    }).feed({
+        name: "bob",
+        something: 1000,
+        nested: { mom: 3 }
+    }, function (err,data) {
+        if ((!err) && (data.timestamp)) { test.done() } else { test.fail() }
+    })
+    
+}
+
+
+
 exports.BasicChaining = function(test) {
 
     var validator = Validator()
@@ -157,4 +183,3 @@ exports.LazyInstantiation = function (test) {
         test.done()
     })
 }
-
