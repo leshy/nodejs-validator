@@ -124,7 +124,7 @@ function addObjectToValidators (obj,name) {
     }
 }
 
-// this is kinda crappy, I should pby use my graph lib..
+// this is kinda crappy, I should pby use my graph lib.. 
 function addFunctionToValidators (validatorf,name,changesValue) {
     ValidatorObject.prototype[name] = function (options) {
         
@@ -183,7 +183,7 @@ addFunctionToValidators(function (value,options,callback) {
     _.map(options,function (validator,property) {
         // make sure we have validator and not some sintax sugar
         // also, set it back to your own arguments dict, 
-        // this will make sure that validator instantiation is run only once.
+        // this will make sure that child validator instantiation is run only once and not each time we call .feed/.match on a validator object
         validator = options[property] = Validator(validator) 
         functions[property] = function (callback) { validator.feed(value[property],callback) }
     })
@@ -265,7 +265,7 @@ var Validator = exports.Validator = function (options) {
     if ((options != undefined) && (options.constructor == ValidatorObject)) { return options }
 
     var validator = new ValidatorObject() 
-    validator.globalOptions = {} // debug boolean and such things, stored in the first validator
+    validator.globalOptions = {} // debug boolean and such things, stored in the first validator in chain
 
     if (!options) { return validator }
     
