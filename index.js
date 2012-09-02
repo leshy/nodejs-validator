@@ -257,7 +257,6 @@ maybe look at regexps, take some insipration from there..
 
 */
 
-
 var is = exports.is = function (value) {
     return Validator().Is({value: value})
 }

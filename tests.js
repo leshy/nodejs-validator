@@ -117,7 +117,7 @@ exports.Children = function(test) {
         })
     
     validator.feed({bla : 3 },function (err,data) {
-        test.equals(JSON.stringify(data),'{"bla":3,"xx":"test"}')
+        test.deepEqual(data,{"bla":3,"xx":"test"})
         test.done();
     })
 };
@@ -161,7 +161,7 @@ exports.Or = function (test) {
     validator.feed({bla: 3, xx: true},function (err,data) { // this shouldn't pass
         if (err) { 
             validator.feed({bla: 3}, function (err,data) {
-                test.equals(JSON.stringify(data),'{"bla":3,"xx":3}') // check if xx was modified properly
+                test.deepEqual(data,{"bla":3,"xx":3}) // check if xx was modified properly
                 test.done()
             })
         } else {
