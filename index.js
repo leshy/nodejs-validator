@@ -9,10 +9,10 @@
 
 var Validate = require('./validate.js').Validate
 var _ = require('underscore')
-var backbone = require('backbone4000')
 var colors = require('colors')
 var helpers = require('helpers')
 var async = require('async')
+var Backbone = require('backbone4000')
 
 // deretardates the magical arguments object
 function toArray(arg) { return Array.prototype.slice.call(arg); }
@@ -356,3 +356,17 @@ function select(options) {
 }
 
 */
+
+
+// backbone model that uses validator on its own attributes (for initialization)
+// feed call in this case should BLOCK. at least on the level of this object's init.. 
+// we don't want other subclassed initialize functions to be called until verification is complete
+var ValidatedModel = exports.ValidatedModel = Backbone.Model.extend4000({
+    initialize: function () {
+        var validator 
+        if (validator = this.get('validator')) {
+            Validator(validator).feed(this.attributes,function (err,data) { if (err) { throw err } })
+        }
+    }
+})
+

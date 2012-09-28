@@ -33,12 +33,9 @@ exports.QuickExample = function (test) {
         something: 1000,
         nested: { mom: 3 }
     }, function (err,data) {
-        if ((!err) && (data.timestamp)) { test.done() } else { test.fail() }
+        if ((!err) && (data.timestamp) && (data.nested.bla == 3)) { test.done() } else { test.fail() }
     })
-
 }
-
-
 
 exports.BasicChaining = function(test) {
 
