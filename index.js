@@ -9,10 +9,10 @@
 
 var Validate = require('./validate.js').Validate
 var _ = require('underscore')
-var backbone = require('backbone4000')
 var colors = require('colors')
 var helpers = require('helpers')
 var async = require('async')
+var Backbone = require('backbone4000')
 
 // deretardates the magical arguments object
 function toArray(arg) { return Array.prototype.slice.call(arg); }
@@ -182,7 +182,7 @@ addFunctionToValidators(function (value,options,callback) {
 },"Default",true)
 
 addFunctionToValidators(function (value,options,callback) {
-    if (!value ||  (value.constructor != Object)) { callback(Validate.fail("Need an object type in order to inspect children"),value); return }
+    if (!value ||  (typeof(value) != "object")) { callback(Validate.fail("Need an object type in order to inspect children"),value); return }
     
     var functions = {}
     _.map(options,function (validator,property) {
@@ -321,7 +321,6 @@ var Select = exports.Select = function () {
     if ((args.length < 3) || !(args.length % 2)) { throw "wrong number of arguments" }
 
     var target = args.shift()
-    
     var chew = function () {
         if (!args.length) { return }
         var pattern = Validator(args.shift())
@@ -336,33 +335,18 @@ var Select = exports.Select = function () {
         })
     }
 
-    chew(args)        
+    chew()
 }
 
-/*
-function select(options) {
-    Validator({
-        data: "Object",
-        match: "Array"
-//        match: [ "Object","Function", "..." ]
-    }).feed(options,function (err,options) {
-        if (err) { throw err }
-        var match = options.match
-
-        var chew = function () {
-            if (!match.length) { return }
-            pattern = match.shift()
-            callback = match.shift()
-
-            pattern.match(options.data,function (err,data) {
-                if (err) { chew(); return }
-                return callback(data,chew)
-            })
+// backbone model that uses validator on its own attributes (for initialization)
+// feed call in this case should BLOCK. at least on the level of this object's init.. 
+// we don't want other subclassed initialize functions to be called until verification is complete
+var ValidatedModel = exports.ValidatedModel = Backbone.Model.extend4000({
+    initialize: function () {
+        var validator 
+        if (validator = this.get('validator')) {
+            Validator(validator).feed(this.attributes,function (err,data) { if (err) { throw err } })
         }
+    }
+})
 
-        chew()
-        
-    })
-}
-
-*/
