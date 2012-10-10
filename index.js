@@ -32,11 +32,16 @@ _.map([ Boolean, String, Function, Object, Array, Number ],function (type) {
 })
 
 
-Validate.Exists = function (value) {
+Validate.Exists = function (value,options,callback) {
     if (value === undefined) { 
         Validate.fail("got undefined")
+    } else {
+        if (options && options.constructor == Function) {
+            helpers.forceCallback(options,callback)
+        } else {
+            callback()
+        }
     }
-    return true
 }
 
 
@@ -209,8 +214,13 @@ addFunctionToValidators(function (value,options,callback) {
 
 
 addFunctionToValidators(function (value,options,callback) {
-    callback(undefined,options)
-}, "Set", true)
+    if (options.constructor == Function) {
+        helpers.forceCallback(options,callback)
+    } else {
+        value = options 
+        callback(undefined,value)
+    }    
+},"Set",true)
 
 
 // or validator should use Select function its the same thing...
